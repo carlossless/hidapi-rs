@@ -46,7 +46,7 @@ fn compile_linux() {
     // First check the features enabled for the crate.
     // Only one linux backend should be enabled at a time.
 
-    let avail_backends: [(&'static str, Box<dyn Fn()>); 5] = [
+    let avail_backends: [(&'static str, Box<dyn Fn()>); 6] = [
         (
             "LINUX_STATIC_HIDRAW",
             Box::new(|| {
@@ -76,6 +76,28 @@ fn compile_linux() {
                             .expect("Failed to convert include path to str"),
                     );
                 }
+                config.compile("libhidapi.a");
+                println!("cargo:rustc-cfg=libusb");
+                println!("cargo:rustc-cfg=hidapi");
+            }),
+        ),
+        (
+            "LINUX_STATIC_LIBUSB_INVASIVE_GET_USAGE",
+            Box::new(|| {
+                let mut config = cc::Build::new();
+                println!("cargo:rerun-if-changed=etc/hidapi/linux/hid.c");
+                config
+                    .file("etc/hidapi/libusb/hid.c")
+                    .include("etc/hidapi/hidapi");
+                let lib =
+                    pkg_config::find_library("libusb-1.0").expect("Unable to find libusb-1.0");
+                for path in lib.include_paths {
+                    config.include(
+                        path.to_str()
+                            .expect("Failed to convert include path to str"),
+                    );
+                }
+                config.define("INVASIVE_GET_USAGE", "1");
                 config.compile("libhidapi.a");
                 println!("cargo:rustc-cfg=libusb");
                 println!("cargo:rustc-cfg=hidapi");

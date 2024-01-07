@@ -394,13 +394,13 @@ impl DeviceInfo {
     }
 
     /// Usage page is not available on linux libusb backends
-    #[cfg(not(all(libusb, target_os = "linux")))]
+    #[cfg(any(not(all(libusb, target_os = "linux")), feature = "linux-static-libusb-invasive-get-usage"))]
     pub fn usage_page(&self) -> u16 {
         self.usage_page
     }
 
     /// Usage is not available on linux libusb backends
-    #[cfg(not(all(libusb, target_os = "linux")))]
+    #[cfg(any(not(all(libusb, target_os = "linux")), feature = "linux-static-libusb-invasive-get-usage"))]
     pub fn usage(&self) -> u16 {
         self.usage
     }

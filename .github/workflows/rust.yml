@@ -21,7 +21,7 @@ jobs:
       fail-fast: false # don't give up on the whole matrix if one variant fails
       matrix:
         linkage: ["static", "shared"]
-        library: ["hidraw", "libusb"]
+        library: ["hidraw", "libusb", "libusb-invasive-get-usage"]
 
     steps:
     - name: checkout repository and submodules
